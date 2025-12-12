@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>АКМ — Личный кабинет</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">АКМ. Менеджер проектов</div>
+      <div class="sub">Личный кабинет подрядчика</div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab" data-tab="orders">Заказы</button>
+      <button class="tab" data-tab="order">Заказ</button>
+      <button class="tab" data-tab="property">Имущество</button>
+      <button class="tab" data-tab="profile">Профиль</button>
+    </nav>
+
+    <main class="content">
+      <section id="view-orders" class="view"></section>
+      <section id="view-order" class="view"></section>
+      <section id="view-property" class="view"></section>
+      <section id="view-profile" class="view"></section>
+    </main>
+
+    <footer class="footer">
+      <span id="status">…</span>
+    </footer>
+  </div>
+
+  <dialog id="stageDialog">
+    <form method="dialog" class="dialog">
+      <h3>Добавить этап</h3>
+      <label>Трудочасы
+        <input id="stageHours" type="number" min="0" step="1" required />
+      </label>
+      <label>Комментарий
+        <textarea id="stageComment" rows="3" placeholder="Что сделано"></textarea>
+      </label>
+      <div class="actions">
+        <button value="cancel" class="btn secondary">Отмена</button>
+        <button id="stageSubmit" value="ok" class="btn">Сохранить</button>
+      </div>
+      <p class="hint">Записи фиксируются подрядчиком (по договорённости каждые 10–15 трудо‑часов).</p>
+    </form>
+  </dialog>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

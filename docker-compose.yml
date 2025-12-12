@@ -1,0 +1,33 @@
+services:
+  miniapp:
+    build: ./services/miniapp
+    env_file:
+      - ./services/miniapp/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+
+  bot1:
+    build: ./services/bot1_userbot
+    env_file:
+      - ./services/bot1_userbot/.env
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    depends_on:
+      - miniapp
+
+  bot3:
+    build: ./services/bot3_notify_bot
+    env_file:
+      - ./services/bot3_notify_bot/.env
+    ports:
+      - "8002:8002"
+    restart: unless-stopped
+    depends_on:
+      - bot1
+      - miniapp
