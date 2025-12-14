@@ -1,0 +1,1 @@
+# Make "app" a real python package (prevents namespace-package collisions on Windows)

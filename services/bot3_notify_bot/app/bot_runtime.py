@@ -2,12 +2,7 @@ import logging
 from typing import Optional
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo, Update
-from telegram.error import Forbidden
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    ContextTypes,
-)
+from telegram.ext import Application, CommandHandler, ContextTypes
 
 from .config import settings
 
@@ -45,18 +40,26 @@ class Bot3:
         self.application.add_handler(CommandHandler("help", help_cmd))
 
     async def start(self) -> None:
+        # Manual lifecycle control (recommended when integrating with other asyncio frameworks)
         await self.application.initialize()
-        await self.application.start()
+        await self.application.updater.initialize()
         await self.application.updater.start_polling(drop_pending_updates=True)
-        log.info("Bot3 started polling")
+        await self.application.start()
+        log.info("Bot3 polling started")
 
     async def stop(self) -> None:
         try:
             await self.application.updater.stop()
         except Exception:
             pass
-        await self.application.stop()
-        await self.application.shutdown()
+        try:
+            await self.application.stop()
+        except Exception:
+            pass
+        try:
+            await self.application.shutdown()
+        except Exception:
+            pass
         log.info("Bot3 stopped")
 
     async def send_new_order(self, contractor_id: int, order_title: str, group_link: str) -> None:
@@ -68,20 +71,36 @@ class Bot3:
         await self.application.bot.send_message(
             chat_id=contractor_id,
             text=text,
-            reply_markup=make_open_button(order_id, text="Открыть мини‑приложение"),
+            reply_markup=make_open_button(order_id, text="Открыть мини-приложение"),
         )
 
     async def pin_order_details(self, chat_id: int, order_id: str, title: Optional[str] = None) -> int:
         caption = "Детали заказа"
         if title:
             caption = f"Детали заказа: {title}"
+
         msg = await self.application.bot.send_message(
             chat_id=chat_id,
             text=caption,
             reply_markup=make_open_button(order_id, text="Детали заказа"),
         )
         try:
-            await self.application.bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)
+            await self.application.bot.pin_chat_message(
+                chat_id=chat_id,
+                message_id=msg.message_id,
+                disable_notification=True,
+            )
         except Exception as e:
             log.warning("Failed to pin message in %s: %s", chat_id, e)
+
         return msg.message_id
+
+    async def send_raw(self, contractor_id: int, text: str, order_id: Optional[str] = None) -> None:
+        if order_id:
+            await self.application.bot.send_message(
+                chat_id=contractor_id,
+                text=text,
+                reply_markup=make_open_button(order_id, text="Открыть мини-приложение"),
+            )
+        else:
+            await self.application.bot.send_message(chat_id=contractor_id, text=text)
