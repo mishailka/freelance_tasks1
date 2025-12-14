@@ -8,8 +8,6 @@ class Settings(BaseSettings):
     tg_api_hash: str
     pyrogram_session_string: str
 
-    crm_api_key: str
-
     bot1_db_path: str = "/data/bot1.sqlite"
     log_level: str = "INFO"
 

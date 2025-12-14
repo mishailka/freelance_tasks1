@@ -3,21 +3,18 @@ from typing import List, Optional
 
 
 class CreateGroupRequest(BaseModel):
-    order_id: str = Field(..., description="ID заказа (для логов/удобства)")
+    order_id: str
     title: str
     description: Optional[str] = None
-    icon_base64: Optional[str] = Field(
-        None,
-        description="Иконка группы в base64 (PNG/JPG). Можно null, если не нужно менять фото.",
-    )
+    icon_base64: Optional[str] = None
 
     curator_id: int
-    curator_label: str = Field(..., description="Custom title для куратора (label)")
+    curator_label: str
 
-    contractor_ids: List[int] = Field(default_factory=list)
+    contractor_ids: List[int]
 
-    bot2_username: str = Field(..., description="username Bot2 без @")
-    bot3_username: str = Field(..., description="username Bot3 без @")
+    bot2_username: Optional[str] = None
+    bot3_username: Optional[str] = None
 
 
 class CreateGroupResponse(BaseModel):

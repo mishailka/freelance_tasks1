@@ -1,9 +1,8 @@
 import logging
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from .auth import crm_auth
 from .config import settings
 from .schemas import (
     CreateGroupRequest,
@@ -39,7 +38,7 @@ async def health():
     return {"ok": True}
 
 
-@app.post("/api/crm/create_group", response_model=CreateGroupResponse, dependencies=[Depends(crm_auth)])
+@app.post("/api/crm/create_group", response_model=CreateGroupResponse)
 async def create_group(req: CreateGroupRequest):
     res = await tg.create_and_setup_group(
         title=req.title,
@@ -56,7 +55,7 @@ async def create_group(req: CreateGroupRequest):
     return CreateGroupResponse(ok=False, result_code="ERROR", error=res.error)
 
 
-@app.post("/api/crm/remove_contractor", response_model=GenericResponse, dependencies=[Depends(crm_auth)])
+@app.post("/api/crm/remove_contractor", response_model=GenericResponse)
 async def remove_contractor(req: RemoveContractorRequest):
     try:
         await tg.remove_contractor(chat_id=req.chat_id, contractor_id=req.contractor_id)
@@ -65,7 +64,7 @@ async def remove_contractor(req: RemoveContractorRequest):
         return GenericResponse(ok=False, result_code="ERROR", error=str(e))
 
 
-@app.post("/api/crm/send_fallback_message", response_model=GenericResponse, dependencies=[Depends(crm_auth)])
+@app.post("/api/crm/send_fallback_message", response_model=GenericResponse)
 async def send_fallback_message(req: SendFallbackMessageRequest):
     try:
         await tg.send_fallback_message_and_track(

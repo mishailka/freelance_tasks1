@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
-from sqlalchemy import create_engine, String, Integer, DateTime, select, delete
+from sqlalchemy import create_engine, Integer, DateTime, select, delete
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 
 
@@ -23,7 +24,13 @@ class FallbackMessage(Base):
 
 class Storage:
     def __init__(self, sqlite_path: str):
-        self.engine = create_engine(f"sqlite:///{sqlite_path}", connect_args={"check_same_thread": False})
+        p = Path(sqlite_path)
+        if p.parent and str(p.parent) not in (".", ""):
+            p.parent.mkdir(parents=True, exist_ok=True)
+
+        # Нормализуем путь (важно для Windows)
+        abs_path = p.resolve().as_posix()
+        self.engine = create_engine(f"sqlite:///{abs_path}", connect_args={"check_same_thread": False})
         Base.metadata.create_all(self.engine)
 
     def add_fallback_message(self, contractor_id: int, group_id: int, message_id: int) -> None:

@@ -7,10 +7,9 @@ class Settings(BaseSettings):
     bot3_token: str
     bot3_username: str
 
-    bot1_api_base: str = "http://bot1:8001"
+    bot1_api_base: str = "http://127.0.0.1:8001"
     miniapp_public_url: str = "https://example.com"
 
-    crm_api_key: str
     log_level: str = "INFO"
 
 
